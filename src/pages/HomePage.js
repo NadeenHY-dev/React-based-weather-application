@@ -1,25 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Button, Form, Card, Row, Col } from 'react-bootstrap';
+import useCountries from '../hooks/useCountries';
 
 function HomePage() {
   const [cities, setCities] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedCity, setEditedCity] = useState({});
-  const [countries, setCountries] = useState([]);
+  const countries = useCountries();
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('cities') || '[]');
     setCities(saved);
-
-    fetch('https://api.first.org/data/v1/countries')
-      .then(res => res.json())
-      .then(data => {
-        const entries = Object.entries(data.data).map(([code, info]) => ({
-          code,
-          name: info.country,
-        }));
-        setCountries(entries);
-      });
   }, []);
 
   const isValidName = (text) => /^[A-Za-z\s]+$/.test(text);

@@ -1,27 +1,16 @@
-import { useEffect, useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import useCountries from '../hooks/useCountries';
+import { useState } from 'react';
 
 function AddCityPage() {
   const [name, setName] = useState('');
   const [country, setCountry] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
-  const [countries, setCountries] = useState([]);
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetch('https://api.first.org/data/v1/countries')
-      .then(res => res.json())
-      .then(data => {
-        const entries = Object.entries(data.data).map(([code, info]) => ({
-          code,
-          name: info.country,
-        }));
-        setCountries(entries);
-      });
-  }, []);
+  const countries = useCountries();
 
   const isValidName = (text) => /^[A-Za-z\s]+$/.test(text);
   const isValidLat = (lat) => !isNaN(lat) && lat >= -90 && lat <= 90;
@@ -35,12 +24,10 @@ function AddCityPage() {
     const lat = Number(latitude);
     const long = Number(longitude);
 
-    // Check for empty fields first
     if (!trimmedName || !trimmedCountry || latitude === '' || longitude === '') {
       return setMessage('Please fill in all fields before submitting.');
     }
 
-    // Validation
     if (!isValidName(trimmedName)) {
       return setMessage('City name must contain only English letters');
     }
@@ -53,7 +40,6 @@ function AddCityPage() {
       return setMessage('Longitude must be a number between -180 and 180');
     }
 
-    // Check for duplicates
     const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
     const duplicate = savedCities.some(
       (c) =>
@@ -64,7 +50,6 @@ function AddCityPage() {
       return setMessage('This city is already saved.');
     }
 
-    // Save
     const city = {
       name: trimmedName,
       country: trimmedCountry,
@@ -76,7 +61,6 @@ function AddCityPage() {
     localStorage.setItem('cities', JSON.stringify(savedCities));
     navigate('/');
   };
-
 
   return (
     <div>
