@@ -11,6 +11,12 @@ function AboutPage() {
         <li>Prevent duplicates and invalid inputs.</li>
       </ul>
       <p>Built with ❤️ using React and React-Bootstrap.</p>
+      <h4 className="mt-4">Created by:</h4>
+            <ul>
+              <li>Nadeen Haj Yahia – nadeenha@edu.jmc.ac.il</li>
+              <li>Wajdi awida – wajdiaw@edu.jmc.ac.il</li>
+            </ul>
+
     </div>
   );
 }
