@@ -42,8 +42,9 @@ function WeatherModal({ city, onClose }) {
 
   if (!city) return null;
 
-  return (
-    <div style={overlayStyle}>
+return (
+  <div style={overlayStyle} onClick={onClose}>
+    <div style={modalWrapperStyle} onClick={(e) => e.stopPropagation()}>
       <Card style={cardStyle}>
         <Card.Body>
           <Button variant="danger" onClick={onClose} className="float-end">X</Button>
@@ -55,9 +56,7 @@ function WeatherModal({ city, onClose }) {
 
           {loading ? (
             <Spinner animation="border" />
-          ) : error ? (
-          <p className="text-danger mt-3">Couldn't fetch the weather, maybe the wind blew away the signal 🌬️📡</p>
-          ) : (
+          ) : forecast.length > 0 ? (
             <ul className="mt-3">
               {forecast.map((day, index) => (
                 <li key={index}>
@@ -68,11 +67,14 @@ function WeatherModal({ city, onClose }) {
                 </li>
               ))}
             </ul>
+          ) : (
+            <p className="text-danger mt-3">Couldn’t fetch the forecast – maybe the wind blew the signal 🌬️📡</p>
           )}
         </Card.Body>
       </Card>
     </div>
-  );
+  </div>
+);
 }
 
 function formatDate(dateNum) {
@@ -97,6 +99,12 @@ const cardStyle = {
   width: '95%',
   maxWidth: '600px',
   padding: '20px',
+};
+
+const modalWrapperStyle = {
+  width: '100%',
+  maxWidth: '600px',
+  zIndex: 10000,
 };
 
 export default WeatherModal;

@@ -100,7 +100,14 @@ function HomePage() {
         <Row>
           {filteredCities.map((city, index) => (
             <Col key={index} md={6} lg={4} className="mb-4">
-              <Card onClick={() => setSelectedCity(city)} style={{ cursor: 'pointer' }}>
+            <Card
+              onClick={() => {
+                if (editingIndex === null) {
+                  setSelectedCity(city);
+                }
+              }}
+              style={{ cursor: editingIndex === null ? 'pointer' : 'default' }}
+            >
                 <Card.Body>
                   {editingIndex === index ? (
                     <>
