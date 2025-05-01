@@ -1,128 +1,128 @@
-import { Form, Button, Alert } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import useCountries from '../hooks/useCountries';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Table, Button, Form } from 'react-bootstrap';
 
-function AddCityPage() {
-  const [name, setName] = useState('');
-  const [country, setCountry] = useState('');
-  const [latitude, setLatitude] = useState('');
-  const [longitude, setLongitude] = useState('');
-  const [message, setMessage] = useState('');
-  const navigate = useNavigate();
-  const countries = useCountries();
+function CityTablePage() {
+  const [cities, setCities] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editedCity, setEditedCity] = useState({});
+  const [favorites, setFavorites] = useState({});
 
-  const isValidName = (text) => /^[A-Za-z\s]+$/.test(text);
-  const isValidLat = (lat) => !isNaN(lat) && lat >= -90 && lat <= 90;
-  const isValidLong = (long) => !isNaN(long) && long >= -180 && long <= 180;
+  useEffect(() => {
+    fetch('https://api.first.org/data/v1/countries')
+      .then(res => res.json())
+      .then(data => {
+        const entries = Object.entries(data.data).map(([code, info]) => ({
+          name: info.country,
+          code,
+          latitude: '',
+          longitude: ''
+        }));
+        setCities(entries);
+      });
+  }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleDelete = (index) => {
+    const updated = [...cities];
+    updated.splice(index, 1);
+    setCities(updated);
+  };
 
-    const trimmedName = name.trim();
-    const trimmedCountry = country.trim();
-    const lat = Number(latitude);
-    const long = Number(longitude);
+  const handleEditClick = (index) => {
+    setEditingIndex(index);
+    setEditedCity({ ...cities[index] });
+  };
 
-    if (!trimmedName || !trimmedCountry || latitude === '' || longitude === '') {
-      return setMessage('Please fill in all fields before submitting.');
-    }
+  const handleCancel = () => {
+    setEditingIndex(null);
+    setEditedCity({});
+  };
 
-    if (!isValidName(trimmedName)) {
-      return setMessage('City name must contain only English letters');
-    }
+  const handleSave = () => {
+    const updated = [...cities];
+    updated[editingIndex] = editedCity;
+    setCities(updated);
+    setEditingIndex(null);
+  };
 
-    if (!isValidLat(lat)) {
-      return setMessage('Latitude must be a number between -90 and 90');
-    }
-
-    if (!isValidLong(long)) {
-      return setMessage('Longitude must be a number between -180 and 180');
-    }
-
-    const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
-    const duplicate = savedCities.some(
-      (c) =>
-        c.name.trim().toLowerCase() === trimmedName.toLowerCase() &&
-        c.country.trim().toLowerCase() === trimmedCountry.toLowerCase()
-    );
-    if (duplicate) {
-      return setMessage('This city is already saved.');
-    }
-
-    const city = {
-      name: trimmedName,
-      country: trimmedCountry,
-      latitude: lat,
-      longitude: long,
-    };
-
-    savedCities.push(city);
-    localStorage.setItem('cities', JSON.stringify(savedCities));
-    navigate('/');
+  const toggleFavorite = (index) => {
+    setFavorites(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
   };
 
   return (
     <div>
-      <h2>Add a New City</h2>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group>
-          <Form.Label>City Name</Form.Label>
-          <Form.Control
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter city name"
-          />
-        </Form.Group>
-
-        <Form.Group className="mt-3">
-          <Form.Label>Select Country</Form.Label>
-          <Form.Select value={country} onChange={(e) => setCountry(e.target.value)}>
-            <option value="">-- Select Country --</option>
-            {countries.map((c) => (
-              <option key={c.code} value={c.code}>
-                {c.name} ({c.code})
-              </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group className="mt-3">
-          <Form.Label>Latitude</Form.Label>
-          <Form.Control
-            type="number"
-            value={latitude}
-            onChange={(e) => setLatitude(e.target.value)}
-            placeholder="Between -90 and 90"
-          />
-        </Form.Group>
-
-        <Form.Group className="mt-3">
-          <Form.Label>Longitude</Form.Label>
-          <Form.Control
-            type="number"
-            value={longitude}
-            onChange={(e) => setLongitude(e.target.value)}
-            placeholder="Between -180 and 180"
-          />
-        </Form.Group>
-
-        <Button variant="primary" type="submit" className="mt-3">
-          Add City
-        </Button>
-      </Form>
-
-      {message && (
-        <Alert
-          variant={message.includes('success') ? 'success' : 'danger'}
-          className="mt-3"
-        >
-          {message}
-        </Alert>
-      )}
+      <h2 className="mb-4">City List from API</h2>
+      <Table striped bordered hover responsive>
+        <thead>
+          <tr>
+            <th>City</th>
+            <th>Country</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Favorite</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {cities.map((city, index) => (
+            <tr key={index}>
+              <td>
+                {editingIndex === index ? (
+                  <Form.Control
+                    value={editedCity.name}
+                    onChange={(e) => setEditedCity({ ...editedCity, name: e.target.value })}
+                  />
+                ) : (
+                  city.name
+                )}
+              </td>
+              <td>{city.code}</td>
+              <td>
+                {editingIndex === index ? (
+                  <Form.Control
+                    value={editedCity.latitude || ''}
+                    onChange={(e) => setEditedCity({ ...editedCity, latitude: e.target.value })}
+                  />
+                ) : (
+                  city.latitude
+                )}
+              </td>
+              <td>
+                {editingIndex === index ? (
+                  <Form.Control
+                    value={editedCity.longitude || ''}
+                    onChange={(e) => setEditedCity({ ...editedCity, longitude: e.target.value })}
+                  />
+                ) : (
+                  city.longitude
+                )}
+              </td>
+              <td>
+                <Button variant="link" onClick={() => toggleFavorite(index)}>
+                  {favorites[index] ? '❤️' : '🤍'}
+                </Button>
+              </td>
+              <td>
+                {editingIndex === index ? (
+                  <>
+                    <Button variant="success" size="sm" onClick={handleSave} className="me-2">Save</Button>
+                    <Button variant="secondary" size="sm" onClick={handleCancel}>Cancel</Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="primary" size="sm" onClick={() => handleEditClick(index)} className="me-2">Edit</Button>
+                    <Button variant="danger" size="sm" onClick={() => handleDelete(index)}>Delete</Button>
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </div>
   );
 }
 
-export default AddCityPage;
+export default CityTablePage;
