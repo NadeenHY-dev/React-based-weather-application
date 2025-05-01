@@ -4,6 +4,7 @@ import { Button, Card, Spinner } from 'react-bootstrap';
 function WeatherModal({ city, onClose }) {
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!city) return;
@@ -15,28 +16,29 @@ function WeatherModal({ city, onClose }) {
       .then(data => {
         setForecast(data.dataseries || []);
         setLoading(false);
+        setError(false);
       })
       .catch(err => {
         console.error('Error fetching weather:', err);
+        setError(true);
         setLoading(false);
       });
   }, [city]);
 
-const getWeatherIcon = (weather) => {
-  switch (weather) {
-    case 'clear': return '☀️';
-    case 'pcloudy': return '🌤️';
-    case 'mcloudy': return '⛅';
-    case 'cloudy': return '☁️';
-    case 'rain': return '🌧️';
-    case 'lightrain': return '🌦️'; // ⬅️ هذا السطر الجديد
-    case 'snow': return '❄️';
-    case 'ts': return '⛈️';
-    case 'tsrain': return '🌩️';
-    default: return '❓';
+  function getWeatherIcon(weather) {
+    switch (weather) {
+      case 'clear': return '☀️';
+      case 'pcloudy': return '🌤️';
+      case 'mcloudy': return '⛅';
+      case 'cloudy': return '☁️';
+      case 'rain': return '🌧️';
+      case 'lightrain': return '🌦️';
+      case 'snow': return '❄️';
+      case 'ts': return '⛈️';
+      case 'tsrain': return '🌩️';
+      default: return '❓';
+    }
   }
-};
-
 
   if (!city) return null;
 
@@ -53,11 +55,16 @@ const getWeatherIcon = (weather) => {
 
           {loading ? (
             <Spinner animation="border" />
+          ) : error ? (
+          <p className="text-danger mt-3">Couldn't fetch the weather, maybe the wind blew away the signal 🌬️📡</p>
           ) : (
-            <ul>
-              {forecast.slice(0, 5).map((day, index) => (
+            <ul className="mt-3">
+              {forecast.map((day, index) => (
                 <li key={index}>
                   {formatDate(day.date)} – {getWeatherIcon(day.weather)} {day.weather}
+                  <span className="text-muted ms-2">
+                    (Min: {day.temp2m.min}°, Max: {day.temp2m.max}°, Wind: {day.wind10m_max})
+                  </span>
                 </li>
               ))}
             </ul>
@@ -68,8 +75,8 @@ const getWeatherIcon = (weather) => {
   );
 }
 
-function formatDate(date) {
-  const str = date.toString();
+function formatDate(dateNum) {
+  const str = dateNum.toString();
   return `${str.slice(6, 8)}/${str.slice(4, 6)}/${str.slice(0, 4)}`;
 }
 
@@ -87,8 +94,9 @@ const overlayStyle = {
 };
 
 const cardStyle = {
-  width: '90%',
-  maxWidth: '400px',
+  width: '95%',
+  maxWidth: '600px',
+  padding: '20px',
 };
 
 export default WeatherModal;
