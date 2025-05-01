@@ -18,6 +18,8 @@ function CityTablePage() {
           longitude: ''
         }));
         setCities(entries);
+          const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '{}');
+          setFavorites(savedFavorites);
       });
   }, []);
 
@@ -44,12 +46,36 @@ function CityTablePage() {
     setEditingIndex(null);
   };
 
-  const toggleFavorite = (index) => {
-    setFavorites(prev => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
+const toggleFavorite = (city) => {
+  const cityKey = city.name + city.country;
+
+  // تحديث حالة القلوب
+  const updatedFavorites = {
+    ...favorites,
+    [cityKey]: !favorites[cityKey],
   };
+
+  setFavorites(updatedFavorites);
+  localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+
+  // تحديث قائمة المدن في localStorage (اللي بتظهر بالصفحة الرئيسية)
+  const saved = JSON.parse(localStorage.getItem('cities') || '[]');
+  const exists = saved.some(
+    c => c.name === city.name && c.country === city.country
+  );
+
+  let updated;
+  if (exists) {
+    updated = saved.filter(
+      c => !(c.name === city.name && c.country === city.country)
+    );
+  } else {
+    updated = [...saved, city];
+  }
+
+  localStorage.setItem('cities', JSON.stringify(updated));
+};
+
 
   return (
     <div>
@@ -100,9 +126,14 @@ function CityTablePage() {
                 )}
               </td>
               <td>
-                <Button variant="link" onClick={() => toggleFavorite(index)}>
-                  {favorites[index] ? '❤️' : '🤍'}
-                </Button>
+              <Button
+                size="sm"
+                variant="link"
+                onClick={() => toggleFavorite(city)}
+                style={{ color: favorites[city.name + city.country] ? 'red' : 'gray' }}
+              >
+                {favorites[city.name + city.country] ? '❤️' : '🤍'}
+              </Button>
               </td>
               <td>
                 {editingIndex === index ? (
