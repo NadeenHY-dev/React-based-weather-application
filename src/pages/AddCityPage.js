@@ -11,7 +11,6 @@ function AddCityPage() {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-
   useEffect(() => {
     fetch('https://api.first.org/data/v1/countries')
       .then(res => res.json())
@@ -28,28 +27,50 @@ function AddCityPage() {
   const isValidLat = (lat) => !isNaN(lat) && lat >= -90 && lat <= 90;
   const isValidLong = (long) => !isNaN(long) && long >= -180 && long <= 180;
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  if (!isValidName(name)) return setMessage('Invalid city name (letters only)');
-  if (!isValidLat(Number(latitude))) return setMessage('Invalid latitude');
-  if (!isValidLong(Number(longitude))) return setMessage('Invalid longitude');
-  if (!country) return setMessage('Please select a country');
+    const trimmedName = name.trim();
+    const trimmedCountry = country.trim();
+    const lat = Number(latitude);
+    const long = Number(longitude);
 
-  const city = {
-    name,
-    country,
-    latitude,
-    longitude,
+    if (!isValidName(trimmedName)) {
+      return setMessage('City name must contain only English letters');
+    }
+    if (!isValidLat(lat)) {
+      return setMessage('Latitude must be a number between -90 and 90');
+    }
+    if (!isValidLong(long)) {
+      return setMessage('Longitude must be a number between -180 and 180');
+    }
+    if (!trimmedCountry) {
+      return setMessage('Please select a country');
+    }
+
+    const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
+
+    // Duplicate check
+    const duplicate = savedCities.some(
+      (c) =>
+        c.name.trim().toLowerCase() === trimmedName.toLowerCase() &&
+        c.country.trim().toLowerCase() === trimmedCountry.toLowerCase()
+    );
+    if (duplicate) {
+      return setMessage('This city is already saved.');
+    }
+
+    const city = {
+      name: trimmedName,
+      country: trimmedCountry,
+      latitude: lat,
+      longitude: long,
+    };
+
+    savedCities.push(city);
+    localStorage.setItem('cities', JSON.stringify(savedCities));
+    navigate('/');
   };
-
-  const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
-  savedCities.push(city);
-  localStorage.setItem('cities', JSON.stringify(savedCities));
-
-  navigate('/');
-};
-
 
   return (
     <div>
@@ -70,7 +91,9 @@ const handleSubmit = (e) => {
           <Form.Select value={country} onChange={(e) => setCountry(e.target.value)}>
             <option value="">-- Select Country --</option>
             {countries.map((c) => (
-              <option key={c.code} value={c.code}>{c.name}</option>
+              <option key={c.code} value={c.code}>
+                {c.name} ({c.code})
+              </option>
             ))}
           </Form.Select>
         </Form.Group>
@@ -95,10 +118,19 @@ const handleSubmit = (e) => {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit" className="mt-3">Add City</Button>
+        <Button variant="primary" type="submit" className="mt-3">
+          Add City
+        </Button>
       </Form>
 
-      {message && <Alert variant={message.includes('success') ? 'success' : 'danger'} className="mt-3">{message}</Alert>}
+      {message && (
+        <Alert
+          variant={message.includes('success') ? 'success' : 'danger'}
+          className="mt-3"
+        >
+          {message}
+        </Alert>
+      )}
     </div>
   );
 }

@@ -11,7 +11,6 @@ function HomePage() {
     const saved = JSON.parse(localStorage.getItem('cities') || '[]');
     setCities(saved);
 
-    // fetch country list
     fetch('https://api.first.org/data/v1/countries')
       .then(res => res.json())
       .then(data => {
@@ -44,19 +43,44 @@ function HomePage() {
   };
 
   const handleSave = () => {
-if (!isValidName(editedCity.name)) {
-  return alert('City name must contain only letters');
-}
-if (!isValidLat(Number(editedCity.latitude))) {
-  return alert('Latitude must be a number between -90 and 90');
-}
-if (!isValidLong(Number(editedCity.longitude))) {
-  return alert('Longitude must be a number between -180 and 180');
-}
-    if (!editedCity.country) return alert('Please select a country');
+    const trimmedName = editedCity.name.trim();
+    const trimmedCountry = editedCity.country.trim();
+
+    if (!isValidName(trimmedName)) {
+      return alert('City name must contain only English letters');
+    }
+    if (!isValidLat(Number(editedCity.latitude))) {
+      return alert('Latitude must be a number between -90 and 90');
+    }
+    if (!isValidLong(Number(editedCity.longitude))) {
+      return alert('Longitude must be a number between -180 and 180');
+    }
+    if (!trimmedCountry) {
+      return alert('Please select a country');
+    }
+
+    // Fix: compare trimmed/lowercase names and countries from both sides
+    const duplicate = cities.some((c, i) => {
+      const existingName = c.name.trim().toLowerCase();
+      const existingCountry = c.country.trim().toLowerCase();
+      return (
+        i !== editingIndex &&
+        existingName === trimmedName.toLowerCase() &&
+        existingCountry === trimmedCountry.toLowerCase()
+      );
+    });
+
+    if (duplicate) {
+      return alert('This city is already saved.');
+    }
 
     const updated = [...cities];
-    updated[editingIndex] = editedCity;
+    updated[editingIndex] = {
+      ...editedCity,
+      name: trimmedName,
+      country: trimmedCountry,
+    };
+
     setCities(updated);
     localStorage.setItem('cities', JSON.stringify(updated));
     setEditingIndex(null);
@@ -77,7 +101,9 @@ if (!isValidLong(Number(editedCity.longitude))) {
                       <Form.Label>City</Form.Label>
                       <Form.Control
                         value={editedCity.name}
-                        onChange={(e) => setEditedCity({ ...editedCity, name: e.target.value })}
+                        onChange={(e) =>
+                          setEditedCity({ ...editedCity, name: e.target.value })
+                        }
                       />
                     </Form.Group>
 
@@ -85,7 +111,12 @@ if (!isValidLong(Number(editedCity.longitude))) {
                       <Form.Label>Country</Form.Label>
                       <Form.Select
                         value={editedCity.country}
-                        onChange={(e) => setEditedCity({ ...editedCity, country: e.target.value })}
+                        onChange={(e) =>
+                          setEditedCity({
+                            ...editedCity,
+                            country: e.target.value,
+                          })
+                        }
                       >
                         <option value="">-- Select Country --</option>
                         {countries.map((c) => (
@@ -101,7 +132,12 @@ if (!isValidLong(Number(editedCity.longitude))) {
                       <Form.Control
                         type="number"
                         value={editedCity.latitude}
-                        onChange={(e) => setEditedCity({ ...editedCity, latitude: e.target.value })}
+                        onChange={(e) =>
+                          setEditedCity({
+                            ...editedCity,
+                            latitude: e.target.value,
+                          })
+                        }
                       />
                     </Form.Group>
 
@@ -110,12 +146,21 @@ if (!isValidLong(Number(editedCity.longitude))) {
                       <Form.Control
                         type="number"
                         value={editedCity.longitude}
-                        onChange={(e) => setEditedCity({ ...editedCity, longitude: e.target.value })}
+                        onChange={(e) =>
+                          setEditedCity({
+                            ...editedCity,
+                            longitude: e.target.value,
+                          })
+                        }
                       />
                     </Form.Group>
 
-                    <Button variant="success" onClick={handleSave} className="me-2">Save</Button>
-                    <Button variant="secondary" onClick={handleCancel}>Cancel</Button>
+                    <Button variant="success" onClick={handleSave} className="me-2">
+                      Save
+                    </Button>
+                    <Button variant="secondary" onClick={handleCancel}>
+                      Cancel
+                    </Button>
                   </>
                 ) : (
                   <>
@@ -123,11 +168,20 @@ if (!isValidLong(Number(editedCity.longitude))) {
                       {city.name} ({city.country})
                     </Card.Title>
                     <Card.Text>
-                      <strong>Latitude:</strong> {city.latitude}<br />
+                      <strong>Latitude:</strong> {city.latitude}
+                      <br />
                       <strong>Longitude:</strong> {city.longitude}
                     </Card.Text>
-                    <Button variant="primary" className="me-2" onClick={() => handleEditClick(index)}>Edit</Button>
-                    <Button variant="danger" onClick={() => handleDelete(index)}>Delete</Button>
+                    <Button
+                      variant="primary"
+                      className="me-2"
+                      onClick={() => handleEditClick(index)}
+                    >
+                      Edit
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDelete(index)}>
+                      Delete
+                    </Button>
                   </>
                 )}
               </Card.Body>
