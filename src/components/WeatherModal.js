@@ -1,7 +1,43 @@
-import React from 'react';
-import { Button, Card } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Spinner } from 'react-bootstrap';
 
 function WeatherModal({ city, onClose }) {
+  const [forecast, setForecast] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!city) return;
+
+    const url = `https://www.7timer.info/bin/api.pl?lon=${city.longitude}&lat=${city.latitude}&product=civillight&output=json`;
+
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        setForecast(data.dataseries || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error fetching weather:', err);
+        setLoading(false);
+      });
+  }, [city]);
+
+const getWeatherIcon = (weather) => {
+  switch (weather) {
+    case 'clear': return '☀️';
+    case 'pcloudy': return '🌤️';
+    case 'mcloudy': return '⛅';
+    case 'cloudy': return '☁️';
+    case 'rain': return '🌧️';
+    case 'lightrain': return '🌦️'; // ⬅️ هذا السطر الجديد
+    case 'snow': return '❄️';
+    case 'ts': return '⛈️';
+    case 'tsrain': return '🌩️';
+    default: return '❓';
+  }
+};
+
+
   if (!city) return null;
 
   return (
@@ -9,16 +45,32 @@ function WeatherModal({ city, onClose }) {
       <Card style={cardStyle}>
         <Card.Body>
           <Button variant="danger" onClick={onClose} className="float-end">X</Button>
-          <Card.Title className="mt-2">{city.name} ({city.country})</Card.Title>
+          <Card.Title>{city.name} ({city.country})</Card.Title>
           <Card.Text>
-            <strong>Latitude:</strong> {city.latitude}°<br />
-            <strong>Longitude:</strong> {city.longitude}°<br />
-            <em>Weather details can be fetched from an API here.</em>
+            Latitude: {city.latitude}°<br />
+            Longitude: {city.longitude}°
           </Card.Text>
+
+          {loading ? (
+            <Spinner animation="border" />
+          ) : (
+            <ul>
+              {forecast.slice(0, 5).map((day, index) => (
+                <li key={index}>
+                  {formatDate(day.date)} – {getWeatherIcon(day.weather)} {day.weather}
+                </li>
+              ))}
+            </ul>
+          )}
         </Card.Body>
       </Card>
     </div>
   );
+}
+
+function formatDate(date) {
+  const str = date.toString();
+  return `${str.slice(6, 8)}/${str.slice(4, 6)}/${str.slice(0, 4)}`;
 }
 
 const overlayStyle = {
@@ -36,7 +88,7 @@ const overlayStyle = {
 
 const cardStyle = {
   width: '90%',
-  maxWidth: '400px'
+  maxWidth: '400px',
 };
 
 export default WeatherModal;
