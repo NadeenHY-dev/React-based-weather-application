@@ -45,21 +45,22 @@ function HomePage() {
   const handleSave = () => {
     const trimmedName = editedCity.name.trim();
     const trimmedCountry = editedCity.country.trim();
+    const lat = editedCity.latitude;
+    const long = editedCity.longitude;
 
     if (!isValidName(trimmedName)) {
       return alert('City name must contain only English letters');
     }
-    if (!isValidLat(Number(editedCity.latitude))) {
-      return alert('Latitude must be a number between -90 and 90');
+    if (lat === '' || !isValidLat(Number(lat))) {
+      return alert('Latitude is required and must be a number between -90 and 90');
     }
-    if (!isValidLong(Number(editedCity.longitude))) {
-      return alert('Longitude must be a number between -180 and 180');
+    if (long === '' || !isValidLong(Number(long))) {
+      return alert('Longitude is required and must be a number between -180 and 180');
     }
     if (!trimmedCountry) {
       return alert('Please select a country');
     }
 
-    // Fix: compare trimmed/lowercase names and countries from both sides
     const duplicate = cities.some((c, i) => {
       const existingName = c.name.trim().toLowerCase();
       const existingCountry = c.country.trim().toLowerCase();

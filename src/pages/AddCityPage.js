@@ -35,22 +35,26 @@ function AddCityPage() {
     const lat = Number(latitude);
     const long = Number(longitude);
 
+    // Check for empty fields first
+    if (!trimmedName || !trimmedCountry || latitude === '' || longitude === '') {
+      return setMessage('Please fill in all fields before submitting.');
+    }
+
+    // Validation
     if (!isValidName(trimmedName)) {
       return setMessage('City name must contain only English letters');
     }
+
     if (!isValidLat(lat)) {
       return setMessage('Latitude must be a number between -90 and 90');
     }
+
     if (!isValidLong(long)) {
       return setMessage('Longitude must be a number between -180 and 180');
     }
-    if (!trimmedCountry) {
-      return setMessage('Please select a country');
-    }
 
+    // Check for duplicates
     const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
-
-    // Duplicate check
     const duplicate = savedCities.some(
       (c) =>
         c.name.trim().toLowerCase() === trimmedName.toLowerCase() &&
@@ -60,6 +64,7 @@ function AddCityPage() {
       return setMessage('This city is already saved.');
     }
 
+    // Save
     const city = {
       name: trimmedName,
       country: trimmedCountry,
@@ -71,6 +76,7 @@ function AddCityPage() {
     localStorage.setItem('cities', JSON.stringify(savedCities));
     navigate('/');
   };
+
 
   return (
     <div>
