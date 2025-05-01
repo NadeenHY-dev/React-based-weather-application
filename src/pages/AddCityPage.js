@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 function AddCityPage() {
   const [name, setName] = useState('');
@@ -8,6 +9,8 @@ function AddCityPage() {
   const [longitude, setLongitude] = useState('');
   const [countries, setCountries] = useState([]);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     fetch('https://api.first.org/data/v1/countries')
@@ -25,15 +28,28 @@ function AddCityPage() {
   const isValidLat = (lat) => !isNaN(lat) && lat >= -90 && lat <= 90;
   const isValidLong = (long) => !isNaN(long) && long >= -180 && long <= 180;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!isValidName(name)) return setMessage('Invalid city name (letters only)');
-    if (!isValidLat(Number(latitude))) return setMessage('Invalid latitude');
-    if (!isValidLong(Number(longitude))) return setMessage('Invalid longitude');
-    if (!country) return setMessage('Please select a country');
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    setMessage('City validated successfully');
+  if (!isValidName(name)) return setMessage('Invalid city name (letters only)');
+  if (!isValidLat(Number(latitude))) return setMessage('Invalid latitude');
+  if (!isValidLong(Number(longitude))) return setMessage('Invalid longitude');
+  if (!country) return setMessage('Please select a country');
+
+  const city = {
+    name,
+    country,
+    latitude,
+    longitude,
   };
+
+  const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
+  savedCities.push(city);
+  localStorage.setItem('cities', JSON.stringify(savedCities));
+
+  navigate('/');
+};
+
 
   return (
     <div>
