@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Button, Form, Card, Row, Col } from 'react-bootstrap';
 import useCountries from '../hooks/useCountries';
+import WeatherModal from '../components/WeatherModal';
 
 function HomePage() {
   const [cities, setCities] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedCity, setEditedCity] = useState({});
+  const [selectedCity, setSelectedCity] = useState(null);
   const countries = useCountries();
 
   useEffect(() => {
@@ -85,7 +87,7 @@ function HomePage() {
       <Row>
         {cities.map((city, index) => (
           <Col key={index} md={6} lg={4} className="mb-4">
-            <Card>
+            <Card onClick={() => setSelectedCity(city)} style={{ cursor: 'pointer' }}>
               <Card.Body>
                 {editingIndex === index ? (
                   <>
@@ -167,11 +169,20 @@ function HomePage() {
                     <Button
                       variant="primary"
                       className="me-2"
-                      onClick={() => handleEditClick(index)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditClick(index);
+                      }}
                     >
                       Edit
                     </Button>
-                    <Button variant="danger" onClick={() => handleDelete(index)}>
+                    <Button
+                      variant="danger"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(index);
+                      }}
+                    >
                       Delete
                     </Button>
                   </>
@@ -181,6 +192,13 @@ function HomePage() {
           </Col>
         ))}
       </Row>
+
+      {selectedCity && (
+        <WeatherModal
+          city={selectedCity}
+          onClose={() => setSelectedCity(null)}
+        />
+      )}
     </div>
   );
 }
