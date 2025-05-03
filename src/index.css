@@ -1,0 +1,17 @@
+/* Full-page weather background */
+body {
+  margin: 0;
+background-image: url('../public/weather-bg.jpg');  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Optional: glass-like background for main content */
+.bg-glass {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
