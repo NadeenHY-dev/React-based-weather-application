@@ -63,7 +63,7 @@ function HomePage() {
         <Row>
           {filteredCities.map((city, index) => (
             <Col key={index} md={6} lg={4} className="mb-4">
-              <Card>
+            <Card className="weather-card">
                 <Card.Body>
                   <Card.Title className="text-primary fw-bold">
                     {city.name} ({city.country})

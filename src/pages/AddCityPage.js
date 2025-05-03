@@ -126,11 +126,12 @@ function AddCityPage() {
   };
 
   return (
-    <div>
+    <div className="bg-glass">
       <h2 className="mb-3">Add City</h2>
       {message && <Alert variant="success">{message}</Alert>}
       <Button onClick={() => setAdding(true)} className="mb-3">+ Add City</Button>
-      <Table striped bordered hover>
+
+      <Table striped bordered hover className="weather-table">
         <thead>
           <tr>
             <th>City</th>
@@ -235,6 +236,7 @@ function AddCityPage() {
       </Table>
     </div>
   );
+
 }
 
 export default AddCityPage;
