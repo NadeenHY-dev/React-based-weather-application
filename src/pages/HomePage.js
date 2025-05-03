@@ -87,9 +87,9 @@ useEffect(() => {
       >
         <option value="">-- Filter by Country --</option>
         {countries.map((c) => (
-          <option key={c.code} value={c.code}>
-            {c.name} ({c.code})
-          </option>
+        <option key={c.code} value={c.name}>
+          {c.name}
+        </option>
         ))}
       </Form.Select>
       {filteredCountry && (
