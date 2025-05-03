@@ -1,4 +1,3 @@
-// HomePage.js (مُحسن مع ترتيب، فلتر، وتوقعات)
 import { useEffect, useState } from 'react';
 import { Button, Form, Card, Row, Col, Spinner } from 'react-bootstrap';
 import useCountries from '../hooks/useCountries';
@@ -14,12 +13,19 @@ function HomePage() {
 
   const countries = useCountries();
 
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('cities') || '[]');
-    saved.sort((a, b) => a.name.localeCompare(b.name));
-    setCities(saved);
-    setLoading(false);
-  }, []);
+useEffect(() => {
+  const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
+  const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '{}');
+
+  const favCities = savedCities.filter(city =>
+    savedFavorites[city.name + city.country]
+  );
+
+  favCities.sort((a, b) => a.name.localeCompare(b.name));
+  setCities(favCities);
+  setLoading(false);
+}, []);
+
 
   const isValidName = (text) => /^[A-Za-z\s]+$/.test(text);
   const isValidLat = (lat) => !isNaN(lat) && lat >= -90 && lat <= 90;
