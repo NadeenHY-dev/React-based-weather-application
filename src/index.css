@@ -32,3 +32,81 @@ background-image: url('../public/weather-bg.jpg');  background-size: cover;
 .weather-card:hover {
   transform: scale(1.01);
 }
+
+/* Layout background */
+body {
+  margin: 0;
+  background-image: url('/weather-bg.jpg'); /* this is correct path from public/ */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main content container */
+.bg-glass {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Table styling for AddCityPage */
+.weather-table {
+  background-color: rgba(240, 248, 255, 0.9); /* light sky blue background */
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Weather cards on HomePage */
+.weather-card {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.weather-card:hover {
+  transform: scale(1.01);
+}
+
+/* Weather list items in modal (7-day forecast) */
+.weather-list-item {
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 6px;
+  color: white;
+}
+
+.weather-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.weather-modal-wrapper {
+  width: 100%;
+  max-width: 600px;
+  z-index: 10000;
+}
+
+.weather-modal-card {
+  width: 95%;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.weather-list-item {
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 6px;
+  color: white;
+}
