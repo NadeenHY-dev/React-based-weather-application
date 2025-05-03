@@ -1,25 +1,27 @@
 import { useEffect, useState } from 'react';
 import { Table, Button, Form } from 'react-bootstrap';
 
-function CityTablePage() {
+function AddCityPage() {
   const [cities, setCities] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedCity, setEditedCity] = useState({});
   const [favorites, setFavorites] = useState({});
 
   useEffect(() => {
-    fetch('https://api.first.org/data/v1/countries')
+    fetch('https://restcountries.com/v3.1/all')
       .then(res => res.json())
       .then(data => {
-        const entries = Object.entries(data.data).map(([code, info]) => ({
-          name: info.country,
-          code,
-          latitude: '',
-          longitude: ''
+        const entries = data.map(info => ({
+          name: info.name.common,
+          code: info.cca2,
+          latitude: info.latlng?.[0] || '',
+          longitude: info.latlng?.[1] || ''
         }));
+
         setCities(entries);
-          const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '{}');
-          setFavorites(savedFavorites);
+
+        const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '{}');
+        setFavorites(savedFavorites);
       });
   }, []);
 
@@ -46,36 +48,33 @@ function CityTablePage() {
     setEditingIndex(null);
   };
 
-const toggleFavorite = (city) => {
-  const cityKey = city.name + city.country;
+  const toggleFavorite = (city) => {
+    const cityKey = city.name + city.code;
 
-  // تحديث حالة القلوب
-  const updatedFavorites = {
-    ...favorites,
-    [cityKey]: !favorites[cityKey],
-  };
+    const updatedFavorites = {
+      ...favorites,
+      [cityKey]: !favorites[cityKey],
+    };
 
-  setFavorites(updatedFavorites);
-  localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+    setFavorites(updatedFavorites);
+    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
 
-  // تحديث قائمة المدن في localStorage (اللي بتظهر بالصفحة الرئيسية)
-  const saved = JSON.parse(localStorage.getItem('cities') || '[]');
-  const exists = saved.some(
-    c => c.name === city.name && c.country === city.country
-  );
-
-  let updated;
-  if (exists) {
-    updated = saved.filter(
-      c => !(c.name === city.name && c.country === city.country)
+    const saved = JSON.parse(localStorage.getItem('cities') || '[]');
+    const exists = saved.some(
+      c => c.name === city.name && c.code === city.code
     );
-  } else {
-    updated = [...saved, city];
-  }
 
-  localStorage.setItem('cities', JSON.stringify(updated));
-};
+    let updated;
+    if (exists) {
+      updated = saved.filter(
+        c => !(c.name === city.name && c.code === city.code)
+      );
+    } else {
+      updated = [...saved, city];
+    }
 
+    localStorage.setItem('cities', JSON.stringify(updated));
+  };
 
   return (
     <div>
@@ -83,8 +82,8 @@ const toggleFavorite = (city) => {
       <Table striped bordered hover responsive>
         <thead>
           <tr>
-            <th>City</th>
-            <th>Country</th>
+            <th>Country Name</th>
+            <th>Country Code</th>
             <th>Latitude</th>
             <th>Longitude</th>
             <th>Favorite</th>
@@ -98,7 +97,9 @@ const toggleFavorite = (city) => {
                 {editingIndex === index ? (
                   <Form.Control
                     value={editedCity.name}
-                    onChange={(e) => setEditedCity({ ...editedCity, name: e.target.value })}
+                    onChange={(e) =>
+                      setEditedCity({ ...editedCity, name: e.target.value })
+                    }
                   />
                 ) : (
                   city.name
@@ -109,7 +110,9 @@ const toggleFavorite = (city) => {
                 {editingIndex === index ? (
                   <Form.Control
                     value={editedCity.latitude || ''}
-                    onChange={(e) => setEditedCity({ ...editedCity, latitude: e.target.value })}
+                    onChange={(e) =>
+                      setEditedCity({ ...editedCity, latitude: e.target.value })
+                    }
                   />
                 ) : (
                   city.latitude
@@ -119,32 +122,62 @@ const toggleFavorite = (city) => {
                 {editingIndex === index ? (
                   <Form.Control
                     value={editedCity.longitude || ''}
-                    onChange={(e) => setEditedCity({ ...editedCity, longitude: e.target.value })}
+                    onChange={(e) =>
+                      setEditedCity({ ...editedCity, longitude: e.target.value })
+                    }
                   />
                 ) : (
                   city.longitude
                 )}
               </td>
               <td>
-              <Button
-                size="sm"
-                variant="link"
-                onClick={() => toggleFavorite(city)}
-                style={{ color: favorites[city.name + city.country] ? 'red' : 'gray' }}
-              >
-                {favorites[city.name + city.country] ? '❤️' : '🤍'}
-              </Button>
+                <Button
+                  size="sm"
+                  variant="link"
+                  onClick={() => toggleFavorite(city)}
+                  style={{
+                    color: favorites[city.name + city.code] ? 'red' : 'gray',
+                  }}
+                >
+                  {favorites[city.name + city.code] ? '❤️' : '🤍'}
+                </Button>
               </td>
               <td>
                 {editingIndex === index ? (
                   <>
-                    <Button variant="success" size="sm" onClick={handleSave} className="me-2">Save</Button>
-                    <Button variant="secondary" size="sm" onClick={handleCancel}>Cancel</Button>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      onClick={handleSave}
+                      className="me-2"
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </Button>
                   </>
                 ) : (
                   <>
-                    <Button variant="primary" size="sm" onClick={() => handleEditClick(index)} className="me-2">Edit</Button>
-                    <Button variant="danger" size="sm" onClick={() => handleDelete(index)}>Delete</Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => handleEditClick(index)}
+                      className="me-2"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      onClick={() => handleDelete(index)}
+                    >
+                      Delete
+                    </Button>
                   </>
                 )}
               </td>
@@ -156,4 +189,4 @@ const toggleFavorite = (city) => {
   );
 }
 
-export default CityTablePage;
+export default AddCityPage;
