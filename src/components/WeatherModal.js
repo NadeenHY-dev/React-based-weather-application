@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Spinner } from 'react-bootstrap';
 
+/**
+ * Displays a modal with a 7-day weather forecast for the given city.
+ *
+ * @component
+ * @param {{ city: { name: string, country: string, latitude: number, longitude: number }, onClose: Function }} props
+ * @returns {JSX.Element|null} The rendered weather modal or null if no city is selected.
+ */
 function WeatherModal({ city, onClose }) {
   const [forecast, setForecast] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  /**
+   * Fetch weather data from 7timer API when the city changes.
+   */
   useEffect(() => {
     if (!city) return;
 
@@ -25,6 +35,11 @@ function WeatherModal({ city, onClose }) {
       });
   }, [city]);
 
+  /**
+   * Return an emoji icon based on the weather type.
+   * @param {string} weather - The weather condition code from the API.
+   * @returns {string} The emoji representing the weather.
+   */
   function getWeatherIcon(weather) {
     switch (weather) {
       case 'clear': return '☀️';
@@ -40,6 +55,11 @@ function WeatherModal({ city, onClose }) {
     }
   }
 
+  /**
+   * Return a background color based on the weather condition.
+   * @param {string} weather - The weather condition code.
+   * @returns {string} A CSS-compatible color string.
+   */
   function getColorByWeather(weather) {
     switch (weather) {
       case 'clear': return '#FFD700';      // Yellow
@@ -94,6 +114,12 @@ function WeatherModal({ city, onClose }) {
   );
 }
 
+/**
+ * Converts a numeric date (YYYYMMDD) into a human-readable format DD/MM/YYYY.
+ *
+ * @param {number} dateNum - Date as a number in YYYYMMDD format.
+ * @returns {string} Formatted date string.
+ */
 function formatDate(dateNum) {
   const str = dateNum.toString();
   return `${str.slice(6, 8)}/${str.slice(4, 6)}/${str.slice(0, 4)}`;

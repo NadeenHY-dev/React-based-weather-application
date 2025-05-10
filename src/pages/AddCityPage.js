@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Table, Button, Form, Alert } from 'react-bootstrap';
 
+/**
+ * AddCityPage component allows users to add, edit, delete, and favorite cities.
+ * Cities are stored in localStorage and displayed in a table. Users can also
+ * select a country from a dropdown and validate input data.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered page with form and city management table.
+ */
 function AddCityPage() {
   const [cities, setCities] = useState([]);
   const [newCity, setNewCity] = useState({ name: '', country: '', latitude: '', longitude: '' });
@@ -12,8 +20,11 @@ function AddCityPage() {
   const [editedCity, setEditedCity] = useState({});
   const [favorites, setFavorites] = useState({});
 
+  /**
+   * Load countries from API and initialize cities and favorites from localStorage.
+   * This runs once on component mount.
+   */
   useEffect(() => {
-    // Load countries from API
     fetch('https://api.first.org/data/v1/countries')
       .then(res => res.json())
       .then(data => {
@@ -24,7 +35,6 @@ function AddCityPage() {
         setCountries(countryArray);
       });
 
-    // Default cities if none saved
     let savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
     if (savedCities.length === 0) {
       savedCities = [
@@ -37,15 +47,25 @@ function AddCityPage() {
     }
     setCities(savedCities);
 
-    // Load favorites
     const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '{}');
     setFavorites(savedFavorites);
   }, []);
 
+  /** @param {string} text - The input city name. */
   const isValidName = (text) => /^[A-Za-z\s]+$/.test(text);
+
+  /** @param {number|string} lat - Latitude value. */
   const isValidLat = (lat) => !isNaN(lat) && lat >= -90 && lat <= 90;
+
+  /** @param {number|string} long - Longitude value. */
   const isValidLong = (long) => !isNaN(long) && long >= -180 && long <= 180;
 
+  /**
+   * Validate city fields.
+   * @param {Object} city - The city object to validate.
+   * @param {boolean} [isNew=true] - If true, checks for name uniqueness.
+   * @returns {Object} errors - A map of field names to error messages.
+   */
   const validate = (city, isNew = true) => {
     const errs = {};
     if (!city.name.trim()) {
@@ -71,6 +91,9 @@ function AddCityPage() {
     return errs;
   };
 
+  /**
+   * Add a new city after validation.
+   */
   const handleAddCity = () => {
     const validation = validate(newCity);
     if (Object.keys(validation).length > 0) {
@@ -87,6 +110,10 @@ function AddCityPage() {
     setMessage('City added successfully!');
   };
 
+  /**
+   * Toggle favorite status for a city.
+   * @param {Object} city - The city to toggle favorite.
+   */
   const toggleFavorite = (city) => {
     const key = city.name + city.country;
     const updated = { ...favorites, [key]: !favorites[key] };
@@ -94,6 +121,10 @@ function AddCityPage() {
     localStorage.setItem('favorites', JSON.stringify(updated));
   };
 
+  /**
+   * Delete a city at a given index.
+   * @param {number} index - Index of the city to delete.
+   */
   const handleDelete = (index) => {
     const updated = [...cities];
     updated.splice(index, 1);
@@ -101,16 +132,22 @@ function AddCityPage() {
     localStorage.setItem('cities', JSON.stringify(updated));
   };
 
+  /**
+   * Enable editing for a city.
+   * @param {number} index - Index of the city to edit.
+   */
   const handleEditClick = (index) => {
     setEditingIndex(index);
     setEditedCity({ ...cities[index] });
   };
 
+  /** Cancel the editing process. */
   const handleCancel = () => {
     setEditingIndex(null);
     setErrors({});
   };
 
+  /** Save the edited city after validation. */
   const handleSave = () => {
     const validation = validate(editedCity, false);
     if (Object.keys(validation).length > 0) {
@@ -131,6 +168,7 @@ function AddCityPage() {
       {message && <Alert variant="success">{message}</Alert>}
       <Button onClick={() => setAdding(true)} className="mb-3">+ Add City</Button>
 
+      {/* City Table UI */}
       <Table striped bordered hover className="weather-table">
         <thead>
           <tr>
@@ -143,6 +181,7 @@ function AddCityPage() {
           </tr>
         </thead>
         <tbody>
+          {/* Add new city row */}
           {adding && (
             <tr>
               <td>
@@ -173,6 +212,8 @@ function AddCityPage() {
               </td>
             </tr>
           )}
+
+          {/* Render existing cities */}
           {cities.map((city, index) => {
             const isEditing = editingIndex === index;
             return (
@@ -236,7 +277,6 @@ function AddCityPage() {
       </Table>
     </div>
   );
-
 }
 
 export default AddCityPage;

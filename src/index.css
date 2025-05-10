@@ -1,42 +1,7 @@
 /* Full-page weather background */
 body {
   margin: 0;
-background-image: url('../public/weather-bg.jpg');  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Optional: glass-like background for main content */
-.bg-glass {
-  background-color: rgba(255, 255, 255, 0.85);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.weather-table {
-  background-color: rgba(255, 255, 255, 0.85); /* לבן שקוף */
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.weather-card {
-  background-color: rgba(255, 255, 255, 0.85); /* רקע לבן שקוף */
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  transition: transform 0.2s;
-}
-
-.weather-card:hover {
-  transform: scale(1.01);
-}
-
-/* Layout background */
-body {
-  margin: 0;
-  background-image: url('/weather-bg.jpg'); /* this is correct path from public/ */
+background-image: url('../public/weather-bg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -44,7 +9,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Main content container */
+/* Optional: glass-like background for main content */
 .bg-glass {
   background-color: rgba(255, 255, 255, 0.85);
   padding: 20px;
@@ -79,6 +44,7 @@ body {
   color: white;
 }
 
+/* Modal overlay for weather forecast */
 .weather-modal-overlay {
   position: fixed;
   top: 0;
@@ -92,21 +58,16 @@ body {
   justify-content: center;
 }
 
+/* Modal wrapper */
 .weather-modal-wrapper {
   width: 100%;
   max-width: 600px;
   z-index: 10000;
 }
 
+/* Modal card styling */
 .weather-modal-card {
   width: 95%;
   max-width: 600px;
   padding: 20px;
-}
-
-.weather-list-item {
-  border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 6px;
-  color: white;
 }

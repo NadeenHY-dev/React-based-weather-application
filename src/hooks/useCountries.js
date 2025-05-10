@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react';
 
+/**
+ * Custom React hook to fetch a list of countries from an external API.
+ * Returns an array of country objects with `code` and `name` properties.
+ *
+ * @hook
+ * @returns {Array<{ code: string, name: string }>} Array of countries
+ */
 function useCountries() {
   const [countries, setCountries] = useState([]);
 

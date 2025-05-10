@@ -3,6 +3,13 @@ import { Button, Form, Card, Row, Col, Spinner } from 'react-bootstrap';
 import useCountries from '../hooks/useCountries';
 import WeatherModal from '../components/WeatherModal';
 
+/**
+ * HomePage component displays a list of favorite cities stored in localStorage.
+ * Allows filtering by country and shows a modal with 7-day weather forecast.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered HomePage with saved cities and filtering options.
+ */
 function HomePage() {
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
@@ -11,6 +18,10 @@ function HomePage() {
 
   const countries = useCountries();
 
+  /**
+   * Load saved favorite cities from localStorage and sort them alphabetically by name.
+   * This effect runs once on component mount.
+   */
   useEffect(() => {
     const savedCities = JSON.parse(localStorage.getItem('cities') || '[]');
     const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '{}');
@@ -24,6 +35,7 @@ function HomePage() {
     setLoading(false);
   }, []);
 
+  // Apply filtering based on selected country
   const filteredCities = filteredCountry
     ? cities.filter((c) => c.country === filteredCountry)
     : cities;
@@ -32,6 +44,7 @@ function HomePage() {
     <div>
       <h2 className="text-center mb-4">Saved Cities</h2>
 
+      {/* Dropdown to filter cities by country */}
       <Form.Select
         className="mb-3"
         value={filteredCountry}
@@ -45,6 +58,7 @@ function HomePage() {
         ))}
       </Form.Select>
 
+      {/* Button to reset the selected filter */}
       {filteredCountry && (
         <Button
           variant="secondary"
@@ -55,6 +69,7 @@ function HomePage() {
         </Button>
       )}
 
+      {/* Show loading spinner or list of cities */}
       {loading ? (
         <Spinner animation="border" />
       ) : filteredCities.length === 0 ? (
@@ -63,7 +78,7 @@ function HomePage() {
         <Row>
           {filteredCities.map((city, index) => (
             <Col key={index} md={6} lg={4} className="mb-4">
-            <Card className="weather-card">
+              <Card className="weather-card">
                 <Card.Body>
                   <Card.Title className="text-primary fw-bold">
                     {city.name} ({city.country})
@@ -87,6 +102,7 @@ function HomePage() {
         </Row>
       )}
 
+      {/* Display weather modal for selected city */}
       {selectedCity && (
         <WeatherModal city={selectedCity} onClose={() => setSelectedCity(null)} />
       )}
