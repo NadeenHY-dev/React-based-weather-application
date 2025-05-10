@@ -42,6 +42,5 @@ Installation & Running:
    http://localhost:3000
 
 
-Authors:
+Author:
 - Nadeen Haj Yahia – nadeenha@edu.jmc.ac.il 
-- Wajdi Awida – wajdiaw@edu.jmc.ac.il
