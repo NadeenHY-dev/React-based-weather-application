@@ -1,46 +1,128 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/U_QSKwKq)
+🌤️ Weather Forecast Application
 
-                                      City Weather App
+A responsive React application that allows users to manage cities and display a 7-day weather forecast using the 7Timer API.
 
-A responsive React-based weather application that allows users to add, edit, delete, and favorite cities with their geographic coordinates. The app also displays a 7-day weather forecast for favorite cities using the 7Timer API.
+This project demonstrates modern front-end development practices including component-based architecture, React hooks, routing, reusable logic, and client-side data persistence.
 
-Features:
-- Add Cities: Enter city name, country, latitude, and longitude.
-- Edit / Delete cities.
-- Favorite Cities: Mark favorite cities and view them on the homepage.
-- Filter by Country on the home page.
-- 7-Day Weather Forecast using 7Timer API.
-- Local Storage: All data is stored in the browser’s localStorage — no backend required.
-- Responsive & Styled with React-Bootstrap and a custom weather-themed design.
-- Dynamic Weather Colors: Forecast items change color based on the weather condition.
+🔎 Overview
 
-Technologies Used:
-- React (Functional components & hooks)
-- React Router DOM for navigation
-- React Bootstrap for UI and styling
-- Custom Hooks (e.g., useCountries)
-- Local Storage for data persistence
-- 7Timer API for weather data
+The Weather Forecast Application enables users to manage a personalized list of cities and view their weekly weather forecast based on geographic coordinates.
 
+All data is stored locally in the browser using localStorage — no backend or external database is required.
 
-  Pages:
-- HomePage :Shows all favorite cities and lets the user view the 7-day forecast. |
--AddCityPage: Lets the user add, edit, delete, and favorite cities.       |
-- AboutPage: Project info and developer credits.                         |
+✨ Key Features
+🏙️ City Management
 
+Add cities with name, country, latitude, and longitude
 
+Edit existing city details
 
-Installation & Running:
-1. Clone the repository:
-   git clone <your-repo-url>
-   cd your-project-folder
-2. Install dependencies:
-   npm install
-3. Run the app:
-   npm start
-4. Open in your browser:
-   http://localhost:3000
+Delete cities
 
+Mark and unmark cities as favorites
 
-Author:
-- Nadeen Haj Yahia – nadeenha@edu.jmc.ac.il 
+⭐ Favorites Dashboard
+
+Display all favorite cities on the Home page
+
+Show a 7-day weather forecast for each favorite city
+
+🌍 Country Filtering
+
+Filter displayed cities by country
+
+🌦️ 7-Day Weather Forecast
+
+Forecast data retrieved from the 7Timer API
+
+Dynamic color styling based on weather conditions
+
+💾 Local Data Persistence
+
+Data stored in browser localStorage
+
+No backend required
+
+📱 Responsive UI
+
+Built with React Bootstrap
+
+Fully responsive layout
+
+Clean, weather-themed design
+
+🛠️ Tech Stack
+
+React (Functional Components & Hooks)
+
+React Router DOM
+
+React Bootstrap
+
+Custom Hooks (e.g., useCountries)
+
+Local Storage API
+
+7Timer API
+
+📄 Application Pages
+HomePage
+
+Displays favorite cities
+
+Shows 7-day weather forecast
+
+Allows filtering by country
+
+AddCityPage
+
+Add, edit, delete cities
+
+Manage favorites
+
+AboutPage
+
+Project description
+
+Developer information
+
+⚙️ Installation & Running the Project
+1. Clone the Repository
+git clone https://github.com/NadeenHY-dev/React-based-weather-application.git
+cd React-based-weather-application
+2. Install Dependencies
+
+Make sure Node.js (v14 or later) is installed.
+
+npm install
+3. Start the Development Server
+npm start
+4. Open in Browser
+
+The app will run at:
+
+http://localhost:3000
+🌐 API Reference
+
+Weather data is provided by the 7Timer API:
+
+http://www.7timer.info/doc.php
+
+Forecasts are fetched using geographic coordinates (latitude and longitude).
+
+📂 Project Structure
+src/
+│
+├── pages/
+│   ├── HomePage.js
+│   ├── AddCityPage.js
+│   └── AboutPage.js
+│
+├── components/
+├── hooks/
+├── services/
+└── App.js
+👩‍💻 Author
+
+Nadeen Haj Yahia
+📧 nadeenha@edu.jmc.ac.il
